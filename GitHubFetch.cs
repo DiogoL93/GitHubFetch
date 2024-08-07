@@ -12,11 +12,15 @@ namespace Call_Github_API
         private const string index = "abcdefghijklmnopqrstuvwxyz";
         private const string headerName = "my-app";
 
-        public static async Task<Dictionary<char, long>> getStatistics(string owner, string repo, string access_token)
+        public static async Task<Dictionary<char, long>> getStatistics(string owner, string repo, string access_token = null)
         {
             var client = new GitHubClient(new ProductHeaderValue(headerName));
 
-            client.Credentials = new Credentials(access_token);
+            if (access_token != null)
+            {
+                client.Credentials = new Credentials(access_token);
+            }
+
 
             Dictionary<char, long> statistics = new Dictionary<char, long>
             {

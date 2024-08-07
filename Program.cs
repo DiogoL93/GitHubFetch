@@ -15,7 +15,7 @@ namespace Call_Github_API
 
             try
             {
-                var task = GitHubFetch.getStatistics(config["GitHubOwner"], config["GitHubRepo"], config["GitHubToken"]);
+                var task = GitHubFetch.getStatistics(config["GitHubOwner"], config["GitHubRepo"]);
                 task.Wait();
                 var stats = task.Result;
                 var lines = stats.OrderByDescending(kvp => kvp.Value).Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
