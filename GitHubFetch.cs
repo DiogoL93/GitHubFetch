@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GitHubFetch
 {
-    class GitHubFetch
+    public class GitHubFetch
     {
 
         public static async Task<Dictionary<char, long>> getStatistics(string owner, string repo, string headerName, string access_token = null)
@@ -54,17 +54,18 @@ namespace GitHubFetch
 
             try
             {
-                return readDir(client, owner, repo, statistics, index).Result;
+                var result = await readDir(client, owner, repo, statistics, index);
+                return result;
             }
             catch (Exception ex)
             {
-                throw ex.InnerException;
+                throw ex;
             }
         }
 
         private static async Task<Dictionary<char, long>> readDir(GitHubClient client, string owner, string repo, Dictionary<char, long> statistics, string index, string path = null)
         {
-            IReadOnlyList<RepositoryContent> result;
+            IReadOnlyList<RepositoryContent> results;
 
             try
             {
@@ -72,14 +73,14 @@ namespace GitHubFetch
 
                 if (path == null)
                 {
-                    result = await client.Repository.Content.GetAllContents(owner, repo);
+                    results = await client.Repository.Content.GetAllContents(owner, repo);
                 }
                 else
                 {
-                    result = await client.Repository.Content.GetAllContents(owner, repo, path);
+                    results = await client.Repository.Content.GetAllContents(owner, repo, path);
                 }
 
-                foreach (var item in result)
+                foreach (var item in results)
                 {
                     string type = item.Type.StringValue;
                     if (type.Equals(Constants.CONTENT_TYPE_DIR))
