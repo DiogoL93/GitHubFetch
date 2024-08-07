@@ -5,14 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Call_Github_API
+namespace GitHubFetch
 {
     class GitHubFetch
     {
-        private const string index = "abcdefghijklmnopqrstuvwxyz";
-        private const string headerName = "my-app";
 
-        public static async Task<Dictionary<char, long>> getStatistics(string owner, string repo, string access_token = null)
+        public static async Task<Dictionary<char, long>> getStatistics(string owner, string repo, string headerName, string access_token = null)
         {
             var client = new GitHubClient(new ProductHeaderValue(headerName));
 
@@ -51,17 +49,20 @@ namespace Call_Github_API
                 ['y'] = 0,
                 ['z'] = 0
             };
+
+            string index = string.Concat(statistics.Select(kvp => kvp.Key));
+
             try
             {
-                return readDir(client, owner, repo, statistics).Result;
+                return readDir(client, owner, repo, statistics, index).Result;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex.InnerException;
             }
         }
 
-        private static async Task<Dictionary<char, long>> readDir(GitHubClient client, string owner, string repo, Dictionary<char, long> statistics, string path = null)
+        private static async Task<Dictionary<char, long>> readDir(GitHubClient client, string owner, string repo, Dictionary<char, long> statistics, string index, string path = null)
         {
             IReadOnlyList<RepositoryContent> result;
 
@@ -81,18 +82,18 @@ namespace Call_Github_API
                 foreach (var item in result)
                 {
                     string type = item.Type.StringValue;
-                    if (type.Equals("dir"))
+                    if (type.Equals(Constants.CONTENT_TYPE_DIR))
                     {
-                        statistics = readDir(client, owner, repo, statistics, item.Path).Result;
-                        Console.WriteLine("###### DONE DIRECTORY : " + item.Name + " ########");
+                        statistics = readDir(client, owner, repo, statistics, index, item.Path).Result;
+                        Console.WriteLine(Constants.DIRECTORY_DONE + item.Name);
                     }
                     else
                     {
                         string name = item.Name;
-                        if (name.EndsWith(".ts") || name.EndsWith(".js"))
+                        if (name.EndsWith(Constants.FILE_TYPE_TS) || name.EndsWith(Constants.FILE_TYPE_JS))
                         {
-                            statistics = readFile(client, owner, repo, statistics, item.Path).Result;
-                            Console.WriteLine("Done file : " + name);
+                            statistics = readFile(client, owner, repo, statistics, index, item.Path).Result;
+                            Console.WriteLine(Constants.FILE_DONE + name);
                         }
                     }
                 }
@@ -106,7 +107,7 @@ namespace Call_Github_API
         }
 
 
-        private static async Task<Dictionary<char, long>> readFile(GitHubClient client, string owner, string repo, Dictionary<char, long> statistics, string path)
+        private static async Task<Dictionary<char, long>> readFile(GitHubClient client, string owner, string repo, Dictionary<char, long> statistics, string index, string path)
         {
             try
             {

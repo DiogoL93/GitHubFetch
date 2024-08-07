@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace Call_Github_API
+namespace GitHubFetch
 {
     class Program
     {
@@ -15,7 +15,7 @@ namespace Call_Github_API
 
             try
             {
-                var task = GitHubFetch.getStatistics(config["GitHubOwner"], config["GitHubRepo"]);
+                var task = GitHubFetch.getStatistics(config["GitHubOwner"], config["GitHubRepo"], config["GitHubHeaderName"]);
                 task.Wait();
                 var stats = task.Result;
                 var lines = stats.OrderByDescending(kvp => kvp.Value).Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
