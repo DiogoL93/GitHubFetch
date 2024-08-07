@@ -10,51 +10,25 @@ namespace GitHubFetch
     public class GitHubFetch
     {
 
-        public static async Task<Dictionary<char, long>> getStatistics(string owner, string repo, string headerName, string access_token = null)
+        public static async Task<Dictionary<char, long>> getStatistics(string owner, string repo, string headerName, string searchIndex, string access_token = null)
         {
             var client = new GitHubClient(new ProductHeaderValue(headerName));
 
-            if (access_token != null)
+            if (access_token != null && !access_token.Equals(string.Empty))
             {
                 client.Credentials = new Credentials(access_token);
             }
 
+            Dictionary<char, long> statistics = new Dictionary<char, long>();
 
-            Dictionary<char, long> statistics = new Dictionary<char, long>
+            foreach (var item in searchIndex)
             {
-                ['a'] = 0,
-                ['b'] = 0,
-                ['c'] = 0,
-                ['d'] = 0,
-                ['e'] = 0,
-                ['f'] = 0,
-                ['g'] = 0,
-                ['h'] = 0,
-                ['i'] = 0,
-                ['j'] = 0,
-                ['k'] = 0,
-                ['l'] = 0,
-                ['m'] = 0,
-                ['n'] = 0,
-                ['o'] = 0,
-                ['p'] = 0,
-                ['q'] = 0,
-                ['r'] = 0,
-                ['s'] = 0,
-                ['t'] = 0,
-                ['u'] = 0,
-                ['v'] = 0,
-                ['w'] = 0,
-                ['x'] = 0,
-                ['y'] = 0,
-                ['z'] = 0
-            };
-
-            string index = string.Concat(statistics.Select(kvp => kvp.Key));
+                statistics.Add(item, 0);
+            }
 
             try
             {
-                var result = await readDir(client, owner, repo, statistics, index);
+                var result = await readDir(client, owner, repo, statistics, searchIndex);
                 return result;
             }
             catch (Exception ex)

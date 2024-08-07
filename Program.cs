@@ -15,7 +15,7 @@ namespace GitHubFetch
 
             try
             {
-                var task = GitHubFetch.getStatistics(config["GitHubOwner"], config["GitHubRepo"], config["GitHubHeaderName"]);
+                var task = GitHubFetch.getStatistics(config["GitHubOwner"], config["GitHubRepo"], config["GitHubHeaderName"], config["SearchIndex"], config["Token"]);
                 task.Wait();
                 var stats = task.Result;
                 var lines = stats.OrderByDescending(kvp => kvp.Value).Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
